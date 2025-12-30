@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>表情包生成器 - Meme Maker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- 背景装饰 -->
+        <div class="bg-decoration"></div>
+        
+        <div class="container">
+            <!-- 头部 -->
+            <header class="app-header">
+                <div class="header-content">
+                    <div class="logo">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <h1>表情包生成器</h1>
+                    </div>
+                    <p class="subtitle">轻松制作专业级表情包</p>
+                </div>
+            </header>
+
+            <!-- 主内容区 -->
+            <div class="main-content">
+                <!-- 左侧控制面板 -->
+                <aside class="control-panel">
+                    <div class="panel-header">
+                        <h2>编辑工具</h2>
+                    </div>
+                    
+                    <div class="panel-body">
+                        <!-- 图片上传区域 -->
+                        <div class="control-section">
+                            <div class="section-header">
+                                <span class="section-icon">📷</span>
+                                <h3>选择图片</h3>
+                            </div>
+                            <div class="section-content">
+                                <!-- 模板选择区域 -->
+                                <div class="template-section">
+                                    <p class="template-label">选择模板：</p>
+                                    <div class="template-grid" id="templateGrid">
+                                        <!-- 模板图片将通过 JavaScript 动态加载 -->
+                                    </div>
+                                </div>
+                                
+                                <div class="divider-wrapper">
+                                    <span class="divider-text">或上传自己的图片</span>
+                                </div>
+                                
+                                <div class="upload-area" id="uploadArea">
+                                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                                    <div class="upload-icon">
+                                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <p class="upload-text">点击上传或拖拽图片</p>
+                                    <button class="btn-upload" id="uploadBtn">选择文件</button>
+                                </div>
+                                
+                                <div class="divider-wrapper">
+                                    <span class="divider-text">或</span>
+                                </div>
+                                
+                                <div class="url-input-wrapper">
+                                    <input type="text" id="urlInput" placeholder="粘贴图片链接..." class="url-input">
+                                    <button id="loadUrlBtn" class="btn-url">
+                                        <span>加载</span>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 文本编辑区域 -->
+                        <div class="control-section">
+                            <div class="section-header">
+                                <span class="section-icon">✏️</span>
+                                <h3>编辑文本</h3>
+                            </div>
+                            <div class="section-content">
+                                <div class="input-field">
+                                    <label for="topText" class="input-label">顶部文本</label>
+                                    <textarea id="topText" placeholder="输入顶部文字..." maxlength="100" class="text-input textarea-input" rows="3"></textarea>
+                                    <span class="char-count"><span id="topTextCount">0</span>/100</span>
+                                </div>
+                                <div class="input-field">
+                                    <label for="bottomText" class="input-label">底部文本</label>
+                                    <textarea id="bottomText" placeholder="输入底部文字..." maxlength="100" class="text-input textarea-input" rows="3"></textarea>
+                                    <span class="char-count"><span id="bottomTextCount">0</span>/100</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 样式设置 -->
+                        <div class="control-section">
+                            <div class="section-header">
+                                <span class="section-icon">🎨</span>
+                                <h3>样式设置</h3>
+                            </div>
+                            <div class="section-content">
+                                <div class="setting-item">
+                                    <div class="setting-label">
+                                        <span>字体大小</span>
+                                        <span class="setting-value" id="fontSizeValue">40px</span>
+                                    </div>
+                                    <div class="slider-wrapper">
+                                        <input type="range" id="fontSizeSlider" min="20" max="100" value="40" class="custom-slider">
+                                        <div class="slider-labels">
+                                            <span>小</span>
+                                            <span>大</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-label">
+                                        <span>文本颜色</span>
+                                    </div>
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" id="textColorPicker" value="#ffffff" class="color-picker">
+                                        <div class="color-presets">
+                                            <button class="color-preset" data-color="#ffffff" style="background: #ffffff;"></button>
+                                            <button class="color-preset" data-color="#000000" style="background: #000000;"></button>
+                                            <button class="color-preset" data-color="#ff0000" style="background: #ff0000;"></button>
+                                            <button class="color-preset" data-color="#00ff00" style="background: #00ff00;"></button>
+                                            <button class="color-preset" data-color="#0000ff" style="background: #0000ff;"></button>
+                                            <button class="color-preset" data-color="#ffff00" style="background: #ffff00;"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class="control-section">
+                            <button id="downloadBtn" class="btn-download" disabled>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>下载表情包</span>
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- 右侧预览区域 -->
+                <main class="preview-area">
+                    <div class="preview-header">
+                        <h3>实时预览</h3>
+                        <div class="preview-actions">
+                            <button class="btn-icon" id="resetBtn" title="重置">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M9 3L12 6L9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="imageContainer" class="image-container">
+                        <div class="placeholder">
+                            <div class="placeholder-icon">
+                                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                                    <path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <h4>准备开始创作</h4>
+                            <p>上传图片或输入图片链接开始制作表情包</p>
+                        </div>
+                        <img id="memeImage" alt="表情包图片" style="display: none;">
+                        <div id="topTextOverlay" class="text-overlay top-text"></div>
+                        <div id="bottomTextOverlay" class="text-overlay bottom-text"></div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
