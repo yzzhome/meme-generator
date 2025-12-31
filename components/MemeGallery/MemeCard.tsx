@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react';
 import { Meme } from '@/types/meme';
 import UpvoteButton from './UpvoteButton';
-import { db } from '@/lib/db';
 
 interface MemeCardProps {
   meme: Meme;
@@ -12,52 +11,10 @@ interface MemeCardProps {
 export default function MemeCard({ meme }: MemeCardProps) {
   const [imageError, setImageError] = useState(false);
   const APP_ID = '19b91701-8651-46f9-8d30-ba85b80e929f';
-  
-  // 查询 $files 命名空间获取文件 URL
-  // 只使用 fileId 查询（path 查询可能有类型问题）
-  const { data: fileData, isLoading: fileLoading, error: fileError } = db.useQuery(
-    meme.imageFileId
-      ? {
-          $files: {
-            $: {
-              where: { id: meme.imageFileId },
-            },
-          },
-        }
-      : {}
-  );
 
-  // 调试信息
-  if (fileData) {
-    console.log('File query result:', {
-      memeId: meme.id,
-      imagePath: meme.imagePath,
-      imageFileId: meme.imageFileId,
-      fileData: fileData,
-      $files: fileData.$files,
-    });
-  }
-  if (fileError) {
-    console.error('File query error:', fileError);
-  }
-
-  // 从 $files 查询获取 URL，或使用备用 URL
+  // 构造图片 URL（不使用 $files 查询，因为 InstantDB 类型系统不支持 id 查询）
   const imageUrl = useMemo(() => {
-    // 优先使用从 $files 查询得到的 URL
-    const files = fileData?.$files;
-    if (files) {
-      // $files 可能是数组或对象
-      const fileArray = Array.isArray(files) ? files : Object.values(files);
-      if (fileArray.length > 0) {
-        const file = fileArray[0];
-        if (file?.url) {
-          console.log('Using URL from $files:', file.url);
-          return file.url;
-        }
-      }
-    }
-    
-    // 如果有存储的 URL，使用它（兼容旧数据）
+    // 优先使用存储的 URL（兼容旧数据）
     if (meme.imageUrl) {
       // 如果是旧的错误格式，尝试修复
       if (meme.imageUrl.includes('storage.instantdb.com') && 
@@ -72,13 +29,13 @@ export default function MemeCard({ meme }: MemeCardProps) {
       return meme.imageUrl;
     }
     
-    // 最后使用路径构造 URL
+    // 使用路径构造 CDN URL
     if (meme.imagePath) {
       return `https://cdn.instantdb.com/${APP_ID}/${meme.imagePath}`;
     }
     
     return '';
-  }, [fileData, meme.imageUrl, meme.imagePath, meme.imageFileId]);
+  }, [meme.imageUrl, meme.imagePath]);
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
@@ -111,9 +68,6 @@ export default function MemeCard({ meme }: MemeCardProps) {
           onError={(e) => {
             console.error('Image load error:', imageUrl);
             console.error('Meme data:', meme);
-            console.error('File data:', fileData);
-            console.error('File loading:', fileLoading);
-            console.error('File error:', fileError);
             setImageError(true);
           }}
           onLoad={() => {
@@ -121,18 +75,6 @@ export default function MemeCard({ meme }: MemeCardProps) {
             setImageError(false);
           }}
         />
-      ) : fileLoading ? (
-        <div className="meme-card-image-error" style={{
-          width: '100%',
-          aspectRatio: '1',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: '#f3f4f6',
-          color: '#6b7280',
-        }}>
-          加载中...
-        </div>
       ) : (
         <div className="meme-card-image-error" style={{
           width: '100%',
