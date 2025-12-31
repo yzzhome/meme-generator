@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Meme } from '@/types/meme';
 import UpvoteButton from './UpvoteButton';
+import { useFileUrl } from '@/hooks/useFileUrl';
 
 interface MemeCardProps {
   meme: Meme;
@@ -12,30 +13,12 @@ export default function MemeCard({ meme }: MemeCardProps) {
   const [imageError, setImageError] = useState(false);
   const APP_ID = '19b91701-8651-46f9-8d30-ba85b80e929f';
 
-  // 构造图片 URL（不使用 $files 查询，因为 InstantDB 类型系统不支持 id 查询）
-  const imageUrl = useMemo(() => {
-    // 优先使用存储的 URL（兼容旧数据）
-    if (meme.imageUrl) {
-      // 如果是旧的错误格式，尝试修复
-      if (meme.imageUrl.includes('storage.instantdb.com') && 
-          !meme.imageUrl.includes('instant-storage.s3.amazonaws.com') && 
-          !meme.imageUrl.includes('cdn.instantdb.com')) {
-        // 尝试从路径提取并构造正确的 URL
-        const pathMatch = meme.imageUrl.match(/storage\.instantdb\.com\/(.+)/);
-        if (pathMatch && pathMatch[1]) {
-          return `https://cdn.instantdb.com/${APP_ID}/${pathMatch[1]}`;
-        }
-      }
-      return meme.imageUrl;
-    }
-    
-    // 使用路径构造 CDN URL
-    if (meme.imagePath) {
-      return `https://cdn.instantdb.com/${APP_ID}/${meme.imagePath}`;
-    }
-    
-    return '';
-  }, [meme.imageUrl, meme.imagePath]);
+  // 构造备用 URL
+  const fallbackUrl = meme.imageUrl || 
+    (meme.imagePath ? `https://cdn.instantdb.com/${APP_ID}/${meme.imagePath}` : '');
+
+  // 使用 useFileUrl hook 获取图片 URL（它会尝试查询 $files，失败则使用备用 URL）
+  const imageUrl = useFileUrl(meme.imagePath, fallbackUrl, meme.imageFileId);
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);

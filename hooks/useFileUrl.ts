@@ -7,19 +7,18 @@ const APP_ID = '19b91701-8651-46f9-8d30-ba85b80e929f';
 
 /**
  * Hook to get file URL from InstantDB Storage
- * Tries to query $files namespace, falls back to constructed URL
+ * Tries to query $files namespace by path, falls back to constructed URL
  */
 export function useFileUrl(path: string | undefined, fallbackUrl: string, fileId?: string): string {
   const [url, setUrl] = useState(fallbackUrl);
 
-  // Try to query $files namespace if we have a fileId
-  // Note: $files is a built-in namespace, doesn't need to be in schema
+  // Try to query $files namespace by path (InstantDB supports path queries)
   const { data } = db.useQuery(
-    fileId
+    path
       ? {
           $files: {
             $: {
-              where: { id: fileId },
+              where: { path: path },
             },
           },
         }
@@ -42,7 +41,7 @@ export function useFileUrl(path: string | undefined, fallbackUrl: string, fileId
       // Fall back to provided URL
       setUrl(fallbackUrl);
     }
-  }, [data, path, fallbackUrl, fileId]);
+  }, [data, path, fallbackUrl]);
 
   return url;
 }
