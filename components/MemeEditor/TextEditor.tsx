@@ -50,7 +50,7 @@ export default function TextEditor({
       </div>
 
       <div className={`text-editor ${selectedTextId ? '' : 'hidden'}`}>
-        {selectedText && (
+        {selectedText && selectedTextId && (
           <>
             <div className="input-field">
               <label className="input-label">文本内容</label>
@@ -60,7 +60,7 @@ export default function TextEditor({
                 maxLength={100}
                 rows={3}
                 value={currentTextContent}
-                onChange={(e) => onUpdateTextContent(selectedTextId, e.target.value)}
+                onChange={(e) => onUpdateTextContent(selectedTextId!, e.target.value)}
               />
               <span className="char-count">
                 <span>{currentTextContent.length}</span>/100
@@ -68,7 +68,7 @@ export default function TextEditor({
             </div>
             <button
               className="btn-delete-text"
-              onClick={() => onDeleteText(selectedTextId)}
+              onClick={() => selectedTextId && onDeleteText(selectedTextId)}
               type="button"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
