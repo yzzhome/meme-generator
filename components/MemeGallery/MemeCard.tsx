@@ -13,18 +13,10 @@ export default function MemeCard({ meme }: MemeCardProps) {
   const [imageError, setImageError] = useState(false);
   const APP_ID = '19b91701-8651-46f9-8d30-ba85b80e929f';
   
-  // 查询 $files 命名空间获取文件 URL（如果 schema 中已定义 $files）
-  // 优先使用 path 查询（更可靠），如果没有 path 则使用 fileId
+  // 查询 $files 命名空间获取文件 URL
+  // 只使用 fileId 查询（path 查询可能有类型问题）
   const { data: fileData, isLoading: fileLoading, error: fileError } = db.useQuery(
-    meme.imagePath
-      ? {
-          $files: {
-            $: {
-              where: { path: meme.imagePath },
-            },
-          },
-        }
-      : meme.imageFileId
+    meme.imageFileId
       ? {
           $files: {
             $: {
