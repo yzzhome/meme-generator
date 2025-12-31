@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Roboto:wght@400;500;700;900&family=Oswald:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&family=Impact:wght@400&family=Comic+Neue:wght@400;700&family=Bebas+Neue&family=Anton&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-wrapper">
@@ -94,15 +95,29 @@
                                 <h3>编辑文本</h3>
                             </div>
                             <div class="section-content">
-                                <div class="input-field">
-                                    <label for="topText" class="input-label">顶部文本</label>
-                                    <textarea id="topText" placeholder="输入顶部文字..." maxlength="100" class="text-input textarea-input" rows="3"></textarea>
-                                    <span class="char-count"><span id="topTextCount">0</span>/100</span>
+                                <button id="addTextBtn" class="btn-add-text">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                    <span>添加文本</span>
+                                </button>
+                                
+                                <div id="textList" class="text-list">
+                                    <!-- 文本项将通过 JavaScript 动态添加 -->
                                 </div>
-                                <div class="input-field">
-                                    <label for="bottomText" class="input-label">底部文本</label>
-                                    <textarea id="bottomText" placeholder="输入底部文字..." maxlength="100" class="text-input textarea-input" rows="3"></textarea>
-                                    <span class="char-count"><span id="bottomTextCount">0</span>/100</span>
+                                
+                                <div id="textEditor" class="text-editor hidden">
+                                    <div class="input-field">
+                                        <label class="input-label">文本内容</label>
+                                        <textarea id="currentTextInput" placeholder="输入文字..." maxlength="100" class="text-input textarea-input" rows="3"></textarea>
+                                        <span class="char-count"><span id="currentTextCount">0</span>/100</span>
+                                    </div>
+                                    <button id="deleteTextBtn" class="btn-delete-text">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M3 6H5H21M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <span>删除文本</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -114,6 +129,44 @@
                                 <h3>样式设置</h3>
                             </div>
                             <div class="section-content">
+                                <div class="setting-item">
+                                    <div class="setting-label">
+                                        <span>字体</span>
+                                    </div>
+                                    <select id="fontFamilySelect" class="font-select">
+                                        <option value="Arial">Arial（默认）</option>
+                                        <option value="Impact">Impact（粗体）</option>
+                                        <option value="Comic Neue">Comic Neue（漫画）</option>
+                                        <option value="Bebas Neue">Bebas Neue（无衬线粗体）</option>
+                                        <option value="Anton">Anton（无衬线）</option>
+                                        <option value="Oswald">Oswald（压缩）</option>
+                                        <option value="Montserrat">Montserrat（现代）</option>
+                                        <option value="Roboto">Roboto（简洁）</option>
+                                        <option value="Noto Sans SC">思源黑体（中文）</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-label">
+                                        <span>字体粗细</span>
+                                    </div>
+                                    <div class="font-weight-buttons">
+                                        <button class="font-weight-btn" data-weight="400">常规</button>
+                                        <button class="font-weight-btn active" data-weight="700">粗体</button>
+                                        <button class="font-weight-btn" data-weight="900">超粗</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-label">
+                                        <span>字体样式</span>
+                                    </div>
+                                    <div class="font-style-buttons">
+                                        <button class="font-style-btn active" data-style="normal">正常</button>
+                                        <button class="font-style-btn" data-style="italic">斜体</button>
+                                    </div>
+                                </div>
+                                
                                 <div class="setting-item">
                                     <div class="setting-label">
                                         <span>字体大小</span>
@@ -188,8 +241,9 @@
                             <p>上传图片或输入图片链接开始制作表情包</p>
                         </div>
                         <img id="memeImage" alt="表情包图片" style="display: none;">
-                        <div id="topTextOverlay" class="text-overlay top-text"></div>
-                        <div id="bottomTextOverlay" class="text-overlay bottom-text"></div>
+                        <div id="textOverlays" class="text-overlays">
+                            <!-- 文本元素将通过 JavaScript 动态添加 -->
+                        </div>
                     </div>
                 </main>
             </div>
